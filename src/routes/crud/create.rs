@@ -15,7 +15,7 @@ pub async fn create_user(
 
     let user = insert_user_dto.to_user(None);
 
-    user.save(&db).await.unwrap();
+    user.save(&db).await?;
     
     let dto = user.to_dto();
 
