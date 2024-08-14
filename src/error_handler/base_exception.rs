@@ -5,7 +5,7 @@ use uuid::Uuid;
 fn build_error(status_code: StatusCode, message: String) -> AppError {
     let error_id = Uuid::new_v4().to_string();
 
-    tracing::info!(
+    tracing::debug!(
         "[{}] Request exception. Status code: {}, message: {}",
         error_id,
         status_code,
