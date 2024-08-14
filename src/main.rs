@@ -1,9 +1,9 @@
-use std::env;
-use tokio::net::TcpListener;
 use app::config::logging::init_logging;
 use app::config::mongo_client::mongo_client;
 use app::routes::init_routes;
 use app::support::app_state::AppState;
+use std::env;
+use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() {

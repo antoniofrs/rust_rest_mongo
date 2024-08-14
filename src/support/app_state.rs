@@ -1,5 +1,5 @@
-use mongodb::Database;
 use axum::extract::FromRef;
+use mongodb::Database;
 
 #[derive(Clone, FromRef)]
 pub struct AppState {

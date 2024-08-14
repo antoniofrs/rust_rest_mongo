@@ -1,6 +1,6 @@
+use crate::error_handler::model::app_error::{AppError, ErrorBody};
 use axum::http::StatusCode;
 use uuid::Uuid;
-use crate::error_handler::model::app_error::{AppError, ErrorBody};
 
 fn build_error(status_code: StatusCode, message: String) -> AppError {
     let error_id = Uuid::new_v4().to_string();

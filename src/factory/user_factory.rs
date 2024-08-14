@@ -1,6 +1,6 @@
-use mongodb::bson::oid::ObjectId;
 use crate::dto::user_dto::{InsertUserDto, UserDto};
 use crate::model::crud::user::User;
+use mongodb::bson::oid::ObjectId;
 
 
 impl User {

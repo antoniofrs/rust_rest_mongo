@@ -10,6 +10,6 @@ pub fn init_logging() {
     tracing::subscriber::set_global_default(subscriber)
         .expect("Setting default subscriber failed");
     
-    tracing::info!("Logging initialised");
+    tracing::info!("Logging initialized");
     
 }

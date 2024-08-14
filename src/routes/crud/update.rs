@@ -1,13 +1,13 @@
-use axum::extract::{Path, State};
-use axum::Json;
-use mongodb::bson::oid::ObjectId;
-use mongodb::Database;
-use validator::Validate;
 use crate::dto::user_dto::{InsertUserDto, UserDto};
 use crate::error_handler::bad_request_exception::{to_invalid_oid, to_validation_error};
 use crate::error_handler::model::app_error::AppError;
 use crate::error_handler::not_found_exception::user_not_found_error;
 use crate::model::crud::user::User;
+use axum::extract::{Path, State};
+use axum::Json;
+use mongodb::bson::oid::ObjectId;
+use mongodb::Database;
+use validator::Validate;
 
 pub async fn update_user(
     State(db): State<Database>,
