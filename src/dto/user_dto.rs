@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct UserDto {
     pub id: String,
     pub email: String,

@@ -1,7 +1,5 @@
-use crate::dto::user_dto::{InsertUserDto, UserDto};
+use crate::dto::user_dto::UserDto;
 use crate::model::crud::user::User;
-use mongodb::bson::oid::ObjectId;
-
 
 impl User {
     pub fn to_dto(self) -> UserDto {
@@ -14,13 +12,33 @@ impl User {
     }
 }
 
-impl InsertUserDto {
-    pub fn to_user(self, id: Option<ObjectId>) -> User {
-        User {
-            id: id.unwrap_or(ObjectId::new()),
-            email: self.email,
-            name: self.name,
-            surname: self.surname,
-        }
+#[cfg(test)]
+mod tests {
+    use mongodb::bson::oid::ObjectId;
+    use crate::model::crud::user::User;
+    use crate::dto::user_dto::UserDto;
+
+    #[test]
+    fn converts_user_to_user_dto_correctly() {
+
+        let id = ObjectId::new();
+
+        let user = User {
+            id: id.clone(),
+            name: String::from("name"),
+            surname: String::from("surname"),
+            email: String::from("email@example.com"),
+        };
+
+        let expected_dto = UserDto {
+            id: id.to_string(),
+            name: String::from("name"),
+            surname: String::from("surname"),
+            email: String::from("email@example.com"),
+        };
+
+        let user_dto = user.to_dto();
+
+        assert_eq!(user_dto, expected_dto);
     }
 }
