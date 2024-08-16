@@ -5,6 +5,7 @@ use mongodb::Database;
 use crate::dto::user_dto::UserDto;
 use crate::error_handler::model::app_error::AppError;
 use crate::model::crud::user::User;
+use crate::repository::user_repository::UserRepository;
 use crate::support::result_wrapper::ResultWrapper;
 
 pub async fn find_all_users(

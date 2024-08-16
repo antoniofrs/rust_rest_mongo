@@ -1,6 +1,7 @@
 use crate::dto::user_dto::{InsertUserDto, UserDto};
 use crate::error_handler::bad_request_exception::to_validation_error;
 use crate::error_handler::model::app_error::AppError;
+use crate::repository::user_repository::UserRepository;
 use axum::extract::State;
 use axum::Json;
 use mongodb::Database;

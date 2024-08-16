@@ -8,6 +8,7 @@ use axum::Json;
 use mongodb::bson::oid::ObjectId;
 use mongodb::Database;
 use validator::Validate;
+use crate::repository::user_repository::UserRepository;
 
 pub async fn update_user(
     State(db): State<Database>,

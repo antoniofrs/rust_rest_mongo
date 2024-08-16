@@ -6,6 +6,7 @@ use axum::extract::{Path, State};
 use axum::Json;
 use mongodb::bson::oid::ObjectId;
 use mongodb::Database;
+use crate::repository::user_repository::UserRepository;
 
 pub async fn delete_user(
     Path(id): Path<String>,

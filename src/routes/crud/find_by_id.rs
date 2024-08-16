@@ -7,6 +7,7 @@ use axum::Json;
 use mongodb::bson::oid::ObjectId;
 use mongodb::Database;
 use crate::error_handler::bad_request_exception::to_invalid_oid;
+use crate::repository::user_repository::UserRepository;
 
 pub async fn find_user_by_id(
     Path(id): Path<String>,
