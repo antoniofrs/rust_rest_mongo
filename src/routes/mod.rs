@@ -1,7 +1,9 @@
 mod learn;
 mod crud;
 
-use std::env;
+use crate::config::mongo_client::mongo_client_from_env;
+use crate::repository::user_repository::{UserRepository, UserRepositoryTrait};
+use crate::service::user_service::{UserService, UserServiceTrait};
 use axum::routing::{get, post};
 use axum::Router;
 use crud::create::create_user;
@@ -13,34 +15,32 @@ use learn::hello_world::hello_world;
 use learn::json_body::body_mirror;
 use learn::path_mirror::path_mirror;
 use learn::query_mirror::query_mirror;
-use crate::config::mongo_client::mongo_client;
-use crate::repository::user_repository::{UserRepository, UserRepositoryTrait};
-use crate::service::user_service::{UserService, UserServiceTrait};
 
 pub async fn init_routes() -> Router {
-    let learn = Router::new()
-        .route("/hello", get(hello_world))
-        .route("/body-mirror", post(body_mirror))
-        .route("/path-mirror/:id", get(path_mirror))
-        .route("/query-mirror", get(query_mirror));
+    let learn_routes = init_learn_routes();
+    let user_routes = init_user_routes().await;
 
+    Router::new()
+        .nest("/api/learn", learn_routes)
+        .nest("/api/crud/users", user_routes)
+}
 
-    let uri  = env::var("MONGO_URI")
-        .unwrap_or("mongodb://root:pass@localhost:27017/?authSource=admin&w=majority".to_owned());
+async fn init_user_routes() -> Router {
 
-    let database_name = env::var("DB_NAME")
-        .unwrap_or("rust-rest".to_owned());
-
-    let database = mongo_client(uri, database_name).await;
+    let database = mongo_client_from_env().await;
     let user_repository = UserRepository::new(database);
     let user_service = UserService::new(user_repository);
 
-    let crud = Router::new()
+    Router::new()
         .route("/", get(find_all_users).post(create_user))
         .route("/:id", get(find_user_by_id).put(update_user).delete(delete_user))
-        .with_state(user_service);
+        .with_state(user_service)
+}
 
+fn init_learn_routes() -> Router {
     Router::new()
-        .nest("/api/learn", learn)
-        .nest("/api/crud/users", crud)
+        .route("/hello", get(hello_world))
+        .route("/body-mirror", post(body_mirror))
+        .route("/path-mirror/:id", get(path_mirror))
+        .route("/query-mirror", get(query_mirror))
 }
