@@ -3,6 +3,7 @@ use crate::error_handler::model::app_error::AppError;
 use crate::model::crud::user::User;
 use async_trait::async_trait;
 use futures::TryStreamExt;
+use mockall::automock;
 use mongodb::bson::doc;
 use mongodb::bson::oid::ObjectId;
 use mongodb::{Collection, Database};
@@ -15,7 +16,7 @@ pub struct UserRepository {
 #[async_trait]
 pub trait UserRepositoryTrait {
 
-    fn new(db: Database) -> UserRepository;
+    fn init(db: Database) -> UserRepository;
 
     async fn find_all(&self) -> Result<Vec<User>, AppError>;
     async fn save(&self, user: &User) -> Result<(), AppError>;
@@ -28,7 +29,7 @@ pub trait UserRepositoryTrait {
 #[async_trait]
 impl UserRepositoryTrait for UserRepository {
 
-    fn new(db: Database) -> UserRepository {
+    fn init(db: Database) -> UserRepository {
         let users = db.collection("users");
         UserRepository { users }
     }

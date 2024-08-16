@@ -28,8 +28,8 @@ pub async fn init_routes() -> Router {
 async fn init_user_routes() -> Router {
 
     let database = mongo_client_from_env().await;
-    let user_repository = UserRepository::new(database);
-    let user_service = UserService::new(user_repository);
+    let user_repository = UserRepository::init(database);
+    let user_service = UserService::init(user_repository);
 
     Router::new()
         .route("/", get(find_all_users).post(create_user))

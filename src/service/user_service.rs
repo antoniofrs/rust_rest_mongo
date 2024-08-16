@@ -5,6 +5,7 @@ use crate::error_handler::not_found_exception::user_not_found_error;
 use crate::repository::user_repository::{UserRepository, UserRepositoryTrait};
 use async_trait::async_trait;
 use axum::extract::FromRef;
+use mockall::automock;
 use mongodb::bson::oid::ObjectId;
 use validator::Validate;
 
@@ -15,7 +16,7 @@ pub struct UserService {
 
 #[async_trait]
 pub trait UserServiceTrait {
-    fn new(user_repo: UserRepository) -> UserService;
+    fn init(user_repo: UserRepository) -> UserService;
     async fn find_all(&self) -> Result<Vec<UserDto>, AppError>;
     async fn save(&self, insert_user_dto: InsertUserDto) -> Result<UserDto, AppError>;
     async fn update(&self, id: ObjectId, insert_user_dto: InsertUserDto) -> Result<UserDto, AppError>;
@@ -26,7 +27,7 @@ pub trait UserServiceTrait {
 #[async_trait]
 impl UserServiceTrait for UserService {
 
-    fn new(user_repo: UserRepository) -> UserService {
+    fn init(user_repo: UserRepository) -> UserService {
         UserService { user_repo }
     }
     async fn find_all(&self) -> Result<Vec<UserDto>, AppError> {
