@@ -9,7 +9,7 @@ pub struct UserDto {
     pub surname: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Clone, Serialize, Deserialize, Validate)]
 pub struct InsertUserDto {
     #[validate(email)]
     pub email: String,
