@@ -16,7 +16,7 @@ fn build_error(status_code: StatusCode, message: String) -> AppError {
     AppError {
         code: status_code,
         error_body: ErrorBody {
-            id: error_id,
+            error_id: error_id,
             message,
         },
     }

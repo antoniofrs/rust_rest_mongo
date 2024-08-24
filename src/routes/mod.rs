@@ -1,9 +1,7 @@
 mod learn;
 mod crud;
 
-use crate::config::mongo_client::mongo_client_from_env;
-use crate::repository::user_repository::{UserRepository, UserRepositoryTrait};
-use crate::service::user_service::{UserService, UserServiceTrait};
+use crate::service::user_service::{UserService};
 use axum::routing::{get, post};
 use axum::Router;
 use crud::create::create_user;
@@ -15,10 +13,14 @@ use learn::hello_world::hello_world;
 use learn::json_body::body_mirror;
 use learn::path_mirror::path_mirror;
 use learn::query_mirror::query_mirror;
+use crate::config::mongo_client::get_database_from_env;
+use crate::repository::user_repository::{UserRepository, UserRepositoryTrait};
 
 pub async fn init_routes() -> Router {
-    let learn_routes = init_learn_routes();
     let user_routes = init_user_routes().await;
+    let learn_routes = init_learn_routes();
+
+
 
     Router::new()
         .nest("/api/learn", learn_routes)
@@ -27,7 +29,7 @@ pub async fn init_routes() -> Router {
 
 async fn init_user_routes() -> Router {
 
-    let database = mongo_client_from_env().await;
+    let database = get_database_from_env().await;
     let user_repository = UserRepository::init(database);
     let user_service = UserService::init(user_repository);
 

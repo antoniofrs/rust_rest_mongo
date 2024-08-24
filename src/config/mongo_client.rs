@@ -3,7 +3,12 @@ use mongodb::options::{ClientOptions, ServerApi, ServerApiVersion};
 use mongodb::{Client, Database};
 use mongodb::bson::doc;
 
-pub async fn mongo_client_from_env() -> Database {
+pub struct MongoConfig {
+    pub uri: String,
+    pub database_name: String
+}
+
+pub async fn get_database_from_env() -> Database {
 
     let uri = env::var("MONGO_URI")
         .unwrap_or("mongodb://root:pass@localhost:27017/?authSource=admin&w=majority".to_owned());
@@ -11,11 +16,15 @@ pub async fn mongo_client_from_env() -> Database {
     let database_name = env::var("DB_NAME")
         .unwrap_or("rust-rest".to_owned());
 
-    mongo_client(uri, database_name).await
+    let config = MongoConfig{ uri, database_name };
+
+    get_database(config).await
+
+
 }
 
-pub async fn mongo_client(uri: String, database_name: String) -> Database {
-    let mut client_options = ClientOptions::parse(uri).await.unwrap();
+pub async fn get_database(mongo_config: MongoConfig) -> Database {
+    let mut client_options = ClientOptions::parse(mongo_config.uri).await.unwrap();
 
     let server_api = ServerApi::builder()
         .version(ServerApiVersion::V1)
@@ -30,5 +39,5 @@ pub async fn mongo_client(uri: String, database_name: String) -> Database {
 
     tracing::info!("Deployment pinged. Successfully connected to MongoDB");
 
-    client.database(database_name.leak())
+    client.database(mongo_config.database_name.leak())
 }

@@ -3,14 +3,13 @@ use crate::error_handler::model::app_error::AppError;
 use crate::model::crud::user::User;
 use async_trait::async_trait;
 use futures::TryStreamExt;
-use mockall::automock;
 use mongodb::bson::doc;
 use mongodb::bson::oid::ObjectId;
 use mongodb::{Collection, Database};
 
 #[derive(Clone)]
 pub struct UserRepository {
-    users: Collection<User>
+    users: Collection<User>,
 }
 
 #[async_trait]
@@ -30,7 +29,7 @@ pub trait UserRepositoryTrait {
 impl UserRepositoryTrait for UserRepository {
 
     fn init(db: Database) -> UserRepository {
-        let users = db.collection("users");
+        let users = User::get_collection(&db);
         UserRepository { users }
     }
 

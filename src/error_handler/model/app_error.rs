@@ -3,15 +3,17 @@ use axum::response::{IntoResponse, Response};
 use axum::Json;
 use serde::Serialize;
 
+#[derive(Debug)]
 pub struct AppError {
     pub code: StatusCode,
     pub error_body: ErrorBody,
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ErrorBody {
     pub message: String,
-    pub id: String,
+    pub error_id: String,
 }
 
 impl IntoResponse for AppError {

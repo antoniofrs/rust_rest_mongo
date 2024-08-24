@@ -6,8 +6,8 @@ use axum::Json;
 use mongodb::bson::oid::ObjectId;
 
 pub async fn delete_user(
-    Path(id): Path<String>,
     State(user_service): State<UserService>,
+    Path(id): Path<String>,
 ) -> Result<Json<UserDto>, AppError> {
 
     let user_id = ObjectId::parse_str(id).unwrap();
