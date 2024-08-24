@@ -1,3 +1,4 @@
+use crate::common::test_containers::get_test_database;
 use app::config::logging::init_logging;
 use app::dto::user_dto::InsertUserDto;
 use app::model::crud::user::User;
@@ -5,10 +6,8 @@ use app::repository::user_repository::{UserRepository, UserRepositoryTrait};
 use app::service::user_service::{UserService, UserServiceTrait};
 use common::models::test_insert_user_sto;
 use mongodb::bson::oid::ObjectId;
-use crate::common::test_containers::get_test_database;
 
 mod common;
-
 
 
 #[tokio::test]

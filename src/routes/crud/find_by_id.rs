@@ -9,10 +9,9 @@ use mongodb::bson::oid::ObjectId;
 pub async fn find_user_by_id(
     Path(id): Path<String>,
     State(user_service): State<UserService>,
-) ->  Result<Json<UserDto>, AppError> {
-    
+) -> Result<Json<UserDto>, AppError> {
     let user_id = ObjectId::parse_str(&id)
-        .map_err(|_| {to_invalid_oid(id)})?;
+        .map_err(|_| { to_invalid_oid(id) })?;
 
     let user_dto = user_service.find_by_id(user_id).await?;
 

@@ -10,10 +10,9 @@ pub async fn update_user(
     State(user_service): State<UserService>,
     Path(id): Path<String>,
     Json(insert_user_dto): Json<InsertUserDto>,
-) ->  Result<Json<UserDto>, AppError> {
-
+) -> Result<Json<UserDto>, AppError> {
     let user_id = ObjectId::parse_str(&id)
-        .map_err(|_| {to_invalid_oid(id)})?;
+        .map_err(|_| { to_invalid_oid(id) })?;
 
     let user_dto = user_service.update(user_id, insert_user_dto).await?;
 

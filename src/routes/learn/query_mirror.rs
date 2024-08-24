@@ -7,17 +7,15 @@ pub async fn query_mirror(Query(query): Query<QueryParams>) -> Json<QueryParams>
 }
 
 
-
 #[cfg(test)]
 mod tests {
-    use axum::extract::Query;
-    use tokio;
     use crate::model::learn::query_mirror::QueryParams;
     use crate::routes::learn::query_mirror::query_mirror;
+    use axum::extract::Query;
+    use tokio;
 
     #[tokio::test]
     async fn test_query_mirror() {
-
         let query_params = QueryParams {
             id: "value1".to_string(),
             message: "value1".to_string(),

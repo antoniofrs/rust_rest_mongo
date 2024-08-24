@@ -1,5 +1,5 @@
-use mongodb::Database;
 use app::config::mongo_client::{get_database, MongoConfig};
+use mongodb::Database;
 use testcontainers::runners::AsyncRunner;
 use testcontainers::ContainerAsync;
 use testcontainers_modules::mongo::Mongo;

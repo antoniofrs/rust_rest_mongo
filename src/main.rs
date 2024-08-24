@@ -4,7 +4,6 @@ use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() {
-
     init_logging();
 
     let app = init_routes().await;
@@ -12,7 +11,6 @@ async fn main() {
     let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
     tracing::info!("Listening on {}", listener.local_addr().unwrap());
-    
+
     axum::serve(listener, app).await.unwrap();
-    
 }

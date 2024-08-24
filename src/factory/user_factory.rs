@@ -14,13 +14,12 @@ impl User {
 
 #[cfg(test)]
 mod tests {
-    use mongodb::bson::oid::ObjectId;
-    use crate::model::crud::user::User;
     use crate::dto::user_dto::UserDto;
+    use crate::model::crud::user::User;
+    use mongodb::bson::oid::ObjectId;
 
     #[test]
     fn converts_user_to_user_dto_correctly() {
-
         let id = ObjectId::new();
 
         let user = User {

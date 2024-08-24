@@ -8,7 +8,6 @@ mod tests {
 
     #[tokio::test]
     async fn test_hello_world() {
-
         let result = hello_world().await;
         assert_eq!(result, "Hello world");
     }

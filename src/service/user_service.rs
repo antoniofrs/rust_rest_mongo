@@ -62,14 +62,14 @@ impl UserServiceTrait for UserService {
 
     async fn delete(&self, id: ObjectId) -> Result<UserDto, AppError> {
         let user = self.user_repo.find_by_id(id).await?
-            .ok_or_else(|| {user_not_found_error(id)})?;
+            .ok_or_else(|| { user_not_found_error(id) })?;
         self.user_repo.delete(&user).await?;
         Ok(user.to_dto())
     }
 
     async fn find_by_id(&self, id: ObjectId) -> Result<UserDto, AppError> {
         let user = self.user_repo.find_by_id(id).await?
-            .ok_or_else(|| {user_not_found_error(id)})?;
+            .ok_or_else(|| { user_not_found_error(id) })?;
         Ok(user.to_dto())
     }
 }

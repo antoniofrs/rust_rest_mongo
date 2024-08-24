@@ -13,7 +13,6 @@ mod tests {
 
     #[tokio::test]
     async fn test_body_mirror() {
-
         let input_body = BodyMirror {
             message: "Test".to_owned(),
         };

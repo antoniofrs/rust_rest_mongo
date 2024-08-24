@@ -14,7 +14,6 @@ pub struct UserRepository {
 
 #[async_trait]
 pub trait UserRepositoryTrait {
-
     fn init(db: Database) -> UserRepository;
 
     async fn find_all(&self) -> Result<Vec<User>, AppError>;
@@ -27,7 +26,6 @@ pub trait UserRepositoryTrait {
 
 #[async_trait]
 impl UserRepositoryTrait for UserRepository {
-
     fn init(db: Database) -> UserRepository {
         let users = User::get_collection(&db);
         UserRepository { users }
@@ -37,10 +35,10 @@ impl UserRepositoryTrait for UserRepository {
     async fn find_all(&self) -> Result<Vec<User>, AppError> {
         let cursor = self.users
             .find(doc! {}).await
-            .map_err(|e| { database_error("finding all users", e)})?;
+            .map_err(|e| { database_error("finding all users", e) })?;
 
         let users = cursor.try_collect().await
-            .map_err(|e| { database_error("collecting users", e)})?;
+            .map_err(|e| { database_error("collecting users", e) })?;
 
         Ok(users)
     }
@@ -53,15 +51,15 @@ impl UserRepositoryTrait for UserRepository {
 
     async fn update(&self, user: &User) -> Result<(), AppError> {
         self.users.update_one(
-                doc! { "_id": user.id },
-                doc! { "$set":
+            doc! { "_id": user.id },
+            doc! { "$set":
                     {
                     "email": &user.email,
                     "name": &user.name,
                     "surname": &user.surname
                 }
             },
-            ).await
+        ).await
             .map_err(|e| { database_error("updating user", e) })?;
         Ok(())
     }
@@ -79,5 +77,4 @@ impl UserRepositoryTrait for UserRepository {
 
         Ok(user)
     }
-
 }

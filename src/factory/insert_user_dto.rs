@@ -1,6 +1,6 @@
-use mongodb::bson::oid::ObjectId;
 use crate::dto::user_dto::InsertUserDto;
 use crate::model::crud::user::User;
+use mongodb::bson::oid::ObjectId;
 
 impl InsertUserDto {
     pub fn to_user(self, id: Option<ObjectId>) -> User {
@@ -16,8 +16,8 @@ impl InsertUserDto {
 
 #[cfg(test)]
 mod tests {
-    use mongodb::bson::oid::ObjectId;
     use crate::dto::user_dto::InsertUserDto;
+    use mongodb::bson::oid::ObjectId;
 
     #[test]
     fn test_to_user_with_id() {
