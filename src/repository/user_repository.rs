@@ -12,9 +12,15 @@ pub struct UserRepository {
     users: Collection<User>,
 }
 
+impl UserRepository {
+    pub fn init(db: Database) -> Self {
+        let users = User::get_collection(&db);
+        UserRepository { users }
+    }
+}
+
 #[async_trait]
 pub trait UserRepositoryTrait {
-    fn init(db: Database) -> UserRepository;
 
     async fn find_all(&self) -> Result<Vec<User>, AppError>;
     async fn save(&self, user: &User) -> Result<(), AppError>;
@@ -26,11 +32,6 @@ pub trait UserRepositoryTrait {
 
 #[async_trait]
 impl UserRepositoryTrait for UserRepository {
-    fn init(db: Database) -> UserRepository {
-        let users = User::get_collection(&db);
-        UserRepository { users }
-    }
-
 
     async fn find_all(&self) -> Result<Vec<User>, AppError> {
         let cursor = self.users
