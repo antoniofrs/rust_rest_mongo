@@ -6,5 +6,4 @@ pub mod support;
 pub mod factory;
 pub mod error_handler;
 pub mod repository;
-
 pub mod service;
