@@ -1,7 +1,8 @@
 mod learn;
 mod crud;
 
-use crate::config::mongo_client::get_database_from_env;
+use std::sync::Arc;
+use crate::config::mongo_client::{get_database, MongoConfig};
 use crate::repository::user_repository::UserRepository;
 use crate::service::user_service::UserService;
 use axum::routing::{get, post};
@@ -27,9 +28,9 @@ pub async fn init_routes() -> Router {
 }
 
 async fn init_user_routes() -> Router {
-    let database = get_database_from_env().await;
+    let database = get_database(MongoConfig::default()).await;
     let user_repository = UserRepository::init(database);
-    let user_service: UserService = UserService::init(user_repository);
+    let user_service: UserService = UserService::init(Arc::new(user_repository));
 
     Router::new()
         .route("/", get(find_all_users).post(create_user))

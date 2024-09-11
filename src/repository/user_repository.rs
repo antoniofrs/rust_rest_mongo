@@ -3,6 +3,7 @@ use crate::error_handler::model::app_error::AppError;
 use crate::model::crud::user::User;
 use async_trait::async_trait;
 use futures::TryStreamExt;
+use mockall::automock;
 use mongodb::bson::doc;
 use mongodb::bson::oid::ObjectId;
 use mongodb::{Collection, Database};
@@ -19,6 +20,7 @@ impl UserRepository {
     }
 }
 
+#[automock]
 #[async_trait]
 pub trait UserRepositoryTrait {
 

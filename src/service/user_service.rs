@@ -2,19 +2,20 @@ use crate::dto::user_dto::{InsertUserDto, UserDto};
 use crate::error_handler::bad_request_exception::to_validation_error;
 use crate::error_handler::model::app_error::AppError;
 use crate::error_handler::not_found_exception::user_not_found_error;
-use crate::repository::user_repository::{UserRepository, UserRepositoryTrait};
+use crate::repository::user_repository::UserRepositoryTrait;
 use async_trait::async_trait;
 use axum::extract::FromRef;
 use mongodb::bson::oid::ObjectId;
+use std::sync::Arc;
 use validator::Validate;
 
 #[derive(Clone, FromRef)]
 pub struct UserService {
-    pub user_repo: UserRepository,
+    pub user_repo: Arc<dyn UserRepositoryTrait + Send + Sync>,
 }
 
 impl UserService {
-    pub fn init(user_repo: UserRepository) -> Self {
+    pub fn init(user_repo: Arc<dyn UserRepositoryTrait + Send + Sync>) -> Self {
         UserService { user_repo }
     }
 }

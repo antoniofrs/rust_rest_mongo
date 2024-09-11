@@ -8,16 +8,13 @@ pub struct MongoConfig {
     pub database_name: String,
 }
 
-pub async fn get_database_from_env() -> Database {
-    let uri = env::var("MONGO_URI")
-        .unwrap_or("mongodb://root:pass@localhost:27017/?authSource=admin&w=majority".to_owned());
-
-    let database_name = env::var("DB_NAME")
-        .unwrap_or("rust-rest".to_owned());
-
-    let config = MongoConfig { uri, database_name };
-
-    get_database(config).await
+impl Default for MongoConfig {
+    fn default() -> Self {
+        MongoConfig {
+            uri: env::var("MONGO_URI").unwrap(),
+            database_name: env::var("DB_NAME").unwrap()
+        }
+    }
 }
 
 pub async fn get_database(mongo_config: MongoConfig) -> Database {

@@ -1,23 +1,23 @@
+use std::sync::Arc;
 use crate::common::test_containers::get_test_database;
-use app::config::logging::init_logging;
 use app::dto::user_dto::InsertUserDto;
 use app::model::crud::user::User;
-use app::repository::user_repository::{UserRepository, UserRepositoryTrait};
+use app::repository::user_repository::{MockUserRepositoryTrait, UserRepository};
 use app::service::user_service::{UserService, UserServiceTrait};
-use common::models::test_insert_user_sto;
+use common::models::insert_user_sto;
 use mongodb::bson::oid::ObjectId;
+use crate::common::models::insert_user_sto_invalid_mail;
 
 mod common;
 
 
 #[tokio::test]
 async fn user_is_created_and_found() {
-    init_logging();
     let database = get_test_database().await;
     let user_repository = UserRepository::init(database);
-    let user_service = UserService::init(user_repository);
+    let user_service = UserService::init(Arc::new(user_repository));
 
-    let insert_user_dto = test_insert_user_sto();
+    let insert_user_dto = insert_user_sto();
 
     let user_dto = user_service.save(insert_user_dto).await.unwrap();
     let generated_id = ObjectId::parse_str(&user_dto.id).unwrap();
@@ -31,9 +31,9 @@ async fn user_is_created_and_found() {
 async fn user_is_updated_and_found() {
     let database = get_test_database().await;
     let user_repository = UserRepository::init(database);
-    let user_service = UserService::init(user_repository);
+    let user_service = UserService::init(Arc::new(user_repository));
 
-    let insert_user_dto = test_insert_user_sto();
+    let insert_user_dto = insert_user_sto();
 
     let user_dto = user_service.save(insert_user_dto).await.unwrap();
     let generated_id = ObjectId::parse_str(&user_dto.id).unwrap();
@@ -57,9 +57,9 @@ async fn user_is_updated_and_found() {
 async fn user_is_deleted_and_not_found() {
     let database = get_test_database().await;
     let user_repository = UserRepository::init(database);
-    let user_service = UserService::init(user_repository);
+    let user_service = UserService::init(Arc::new(user_repository));
 
-    let insert_user_dto = test_insert_user_sto();
+    let insert_user_dto = insert_user_sto();
 
     let user_dto = user_service.save(insert_user_dto).await.unwrap();
     let generated_id = ObjectId::parse_str(&user_dto.id).unwrap();
@@ -82,9 +82,9 @@ async fn user_is_deleted_and_not_found() {
 async fn user_is_created_and_found_by_id() {
     let database = get_test_database().await;
     let user_repository = UserRepository::init(database);
-    let user_service = UserService::init(user_repository);
+    let user_service = UserService::init(Arc::new(user_repository));
 
-    let insert_user_dto = test_insert_user_sto();
+    let insert_user_dto = insert_user_sto();
 
     let user_dto = user_service.save(insert_user_dto).await.unwrap();
     let generated_id = ObjectId::parse_str(&user_dto.id).unwrap();
@@ -95,5 +95,23 @@ async fn user_is_created_and_found_by_id() {
     assert_eq!(found_user.name, user_dto.name);
     assert_eq!(found_user.surname, user_dto.surname);
     assert_eq!(found_user.email, user_dto.email);
+}
+
+
+#[tokio::test]
+async fn user_service_returns_error_if_the_email_is_invalid() {
+
+    let mut user_repository = MockUserRepositoryTrait::new();
+
+    user_repository.expect_save()
+        .return_once(|_| Ok(()));
+
+    let user_service = UserService::init(Arc::new(user_repository));
+
+    let insert_user_dto = insert_user_sto_invalid_mail();
+
+    let user_dto = user_service.save(insert_user_dto).await;
+
+    assert!(user_dto.is_err());
 }
 
