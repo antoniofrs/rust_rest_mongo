@@ -1,0 +1,51 @@
+services:
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-configdb:/data/configdb
+      - mongo-db:/data/db
+
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      ME_CONFIG_MONGODB_URL: mongodb://root:pass@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+
+  localstack:
+    container_name: localstack
+    build:
+      context: .
+      dockerfile: localstack.DockerFile
+    restart: unless-stopped
+    environment:
+      - SERVICES=dynamodb,cloudformation,iam,lambda,sts,apigateway,sns,logs,cloudwatch,kms,sqs
+      - AWS_DEFAULT_REGION=us-east-1
+      - LAMBDA_RUNTIME_ENVIRONMENT_TIMEOUT=30
+      - LAMBDA_KEEPALIVE_MS=600000
+      - DEBUG=1
+      - LS_LOG=INFO
+    ports:
+      - '4566:4566'
+    volumes:
+      - 'localstack:/var/lib/localstack'
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+
+volumes:
+  mongo-configdb:
+  mongo-db:
+  localstack:

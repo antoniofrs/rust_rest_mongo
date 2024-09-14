@@ -7,6 +7,7 @@ use crate::repository::user_repository::UserRepository;
 use crate::service::user_service::UserService;
 use axum::routing::{get, post};
 use axum::Router;
+use tokio::net::TcpListener;
 use crud::create::create_user;
 use crud::delete::delete_user;
 use crud::find_all::find_all_users;
@@ -17,14 +18,20 @@ use learn::json_body::body_mirror;
 use learn::path_mirror::path_mirror;
 use learn::query_mirror::query_mirror;
 
-pub async fn init_routes() -> Router {
+pub async fn init_routes() {
     let user_routes = init_user_routes().await;
     let learn_routes = init_learn_routes();
 
 
-    Router::new()
+    let app = Router::new()
         .nest("/api/learn", learn_routes)
-        .nest("/api/crud/users", user_routes)
+        .nest("/api/crud/users", user_routes);
+
+    let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
+
+    tracing::info!("Listening on {}", listener.local_addr().unwrap());
+
+    axum::serve(listener, app).await.unwrap();
 }
 
 async fn init_user_routes() -> Router {

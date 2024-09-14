@@ -1,16 +1,18 @@
 use app::config::logging::init_logging;
+use app::listeners::init_sqs_listener;
 use app::routes::init_routes;
-use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() {
     init_logging();
 
-    let app = init_routes().await;
+    let sqs = tokio::spawn(async {
+        init_sqs_listener().await;
+    });
 
-    let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let routes = tokio::spawn(async {
+        init_routes().await;
+    });
 
-    tracing::info!("Listening on {}", listener.local_addr().unwrap());
-
-    axum::serve(listener, app).await.unwrap();
+    let _ = tokio::join!(sqs,routes);
 }
