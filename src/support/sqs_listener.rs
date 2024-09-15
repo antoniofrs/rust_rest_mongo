@@ -9,6 +9,7 @@ use tokio::time::Duration;
 pub struct SqsListenerBuilder {
     client: Client,
     listeners: HashMap<String, Arc<dyn SqsListener + Sync + Send>>,
+    delay: Duration
 }
 
 #[async_trait]
@@ -20,7 +21,12 @@ pub trait SqsListener {
 impl SqsListenerBuilder {
 
     pub async fn from(client: Client) -> SqsListenerBuilder {
-        SqsListenerBuilder { client, listeners: HashMap::new() }
+        SqsListenerBuilder { client, listeners: HashMap::new(), delay: Duration::from_millis(300) }
+    }
+
+    pub fn polling_delay(mut self, delay: Duration) -> SqsListenerBuilder {
+        self.delay = delay;
+        self
     }
 
     pub fn add_queue(mut self, queue_url: &str, consumer: Arc<dyn SqsListener + Sync + Send>) -> SqsListenerBuilder {
@@ -29,9 +35,10 @@ impl SqsListenerBuilder {
     }
 
     pub fn run(self) -> JoinHandle<()> {
-        tokio::task::spawn(async {
+        tokio::task::spawn(async move {
             let listeners = self.listeners;
             let client = self.client;
+            let delay = self.delay;
             loop {
                 for (queue_url, consumer) in &listeners {
                     let messages = SqsListenerBuilder::receive(&client, queue_url).await;
@@ -39,7 +46,7 @@ impl SqsListenerBuilder {
                         consumer.on_message_received(message).await;
                     }
                 }
-                sleep(Duration::from_millis(1000)).await;
+                sleep(delay).await;
             }
         })
     }

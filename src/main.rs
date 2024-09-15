@@ -1,3 +1,4 @@
+use tokio::time::Duration;
 use app::config::logging::init_logging;
 use app::config::mongo_client::{get_database, MongoConfig};
 use app::config::sqs_client::get_local_sqs_client;
@@ -15,10 +16,10 @@ async fn main() {
     let user_repository = UserRepository::init(database);
     let user_service = UserService::init(user_repository);
 
-
     let routes = init_routes(user_service.clone());
 
     let test = SqsListenerBuilder::from(sqs_client).await
+        .polling_delay(Duration::from_secs(1))
         .add_queue("http://sqs.eu-central-1.localhost.localstack.cloud:4566/000000000000/queue_1", user_service.clone())
         .add_queue("http://sqs.eu-central-1.localhost.localstack.cloud:4566/000000000000/queue_2", user_service.clone())
         .run();
