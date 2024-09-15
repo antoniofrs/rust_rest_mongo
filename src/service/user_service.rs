@@ -7,7 +7,6 @@ use async_trait::async_trait;
 use axum::extract::FromRef;
 use mongodb::bson::oid::ObjectId;
 use std::sync::Arc;
-use axum::Json;
 use validator::Validate;
 use crate::support::sqs_listener::SqsListener;
 
