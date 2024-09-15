@@ -9,7 +9,7 @@ use tokio::time::Duration;
 pub struct SqsListenerBuilder {
     client: Client,
     listeners: HashMap<String, Arc<dyn SqsListener + Sync + Send>>,
-    delay: Duration
+    delay: Duration,
 }
 
 #[async_trait]
@@ -19,7 +19,6 @@ pub trait SqsListener {
 
 
 impl SqsListenerBuilder {
-
     pub async fn from(client: Client) -> SqsListenerBuilder {
         SqsListenerBuilder { client, listeners: HashMap::new(), delay: Duration::from_millis(300) }
     }
@@ -29,8 +28,8 @@ impl SqsListenerBuilder {
         self
     }
 
-    pub fn add_queue(mut self, queue_url: &str, consumer: Arc<dyn SqsListener + Sync + Send>) -> SqsListenerBuilder {
-        self.listeners.insert(queue_url.into(), consumer);
+    pub fn add_queue(mut self, queue_url: String, consumer: Arc<dyn SqsListener + Sync + Send>) -> SqsListenerBuilder {
+        self.listeners.insert(queue_url, consumer);
         self
     }
 
@@ -41,29 +40,24 @@ impl SqsListenerBuilder {
             let delay = self.delay;
             loop {
                 for (queue_url, consumer) in &listeners {
-                    let messages = SqsListenerBuilder::receive(&client, queue_url).await;
-                    for message in messages {
-                        consumer.on_message_received(message).await;
-                    }
+                    SqsListenerBuilder::receive(&client, queue_url, &consumer).await;
                 }
                 sleep(delay).await;
             }
         })
     }
 
-    async fn receive(client: &Client, queue_url: &String) -> Vec<String> {
+    async fn receive(client: &Client, queue_url: &String, consumer: &Arc<dyn SqsListener + Sync + Send>) {
         let rcv_message_output = client.receive_message()
             .queue_url(queue_url)
             .send().await.unwrap();
 
-        let mut messages = Vec::new();
-
         for message in rcv_message_output.messages.unwrap_or_default() {
             let body = message.body.unwrap_or_default();
 
-            tracing::info!("Received message from queue {} : {}", queue_url, body);
+            tracing::info!("Received message from queue '{}' : {}", queue_url, body);
 
-            messages.push(body.clone());
+            consumer.on_message_received(body).await;
 
             client.delete_message()
                 .queue_url(queue_url)
@@ -71,7 +65,5 @@ impl SqsListenerBuilder {
                 .send()
                 .await.unwrap();
         }
-
-        messages
     }
 }
