@@ -1,4 +1,3 @@
-use std::sync::Arc;
 use crate::error_handler::internal_server_exception::database_error;
 use crate::error_handler::model::app_error::AppError;
 use crate::model::crud::user::User;
@@ -15,9 +14,9 @@ pub struct UserRepository {
 }
 
 impl UserRepository {
-    pub fn init(db: Database) -> Arc<UserRepository> {
+    pub fn init(db: Database) -> UserRepository {
         let users = User::get_collection(&db);
-        Arc::new(UserRepository { users })
+        UserRepository { users }
     }
 }
 

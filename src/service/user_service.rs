@@ -7,6 +7,7 @@ use async_trait::async_trait;
 use axum::extract::FromRef;
 use mongodb::bson::oid::ObjectId;
 use std::sync::Arc;
+use axum::Json;
 use validator::Validate;
 use crate::support::sqs_listener::SqsListener;
 
@@ -16,8 +17,8 @@ pub struct UserService {
 }
 
 impl UserService {
-    pub fn init(user_repo: Arc<dyn UserRepositoryTrait + Send + Sync>) -> Arc<UserService> {
-        Arc::new(UserService { user_repo })
+    pub fn init(user_repo: Arc<dyn UserRepositoryTrait + Send + Sync>) -> UserService {
+        UserService { user_repo }
     }
 }
 
