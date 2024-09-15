@@ -8,6 +8,7 @@ use axum::extract::FromRef;
 use mongodb::bson::oid::ObjectId;
 use std::sync::Arc;
 use validator::Validate;
+use crate::support::sqs_listener::SqsListener;
 
 #[derive(Clone, FromRef)]
 pub struct UserService {
@@ -15,8 +16,8 @@ pub struct UserService {
 }
 
 impl UserService {
-    pub fn init(user_repo: Arc<dyn UserRepositoryTrait + Send + Sync>) -> Self {
-        UserService { user_repo }
+    pub fn init(user_repo: Arc<dyn UserRepositoryTrait + Send + Sync>) -> Arc<UserService> {
+        Arc::new(UserService { user_repo })
     }
 }
 
@@ -72,5 +73,11 @@ impl UserServiceTrait for UserService {
         let user = self.user_repo.find_by_id(id).await?
             .ok_or_else(|| { user_not_found_error(id) })?;
         Ok(user.to_dto())
+    }
+}
+#[async_trait]
+impl SqsListener for UserService {
+    async fn on_message_received(&self, message: String) -> () {
+        println!("{}", message);
     }
 }

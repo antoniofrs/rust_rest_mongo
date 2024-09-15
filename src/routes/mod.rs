@@ -2,8 +2,6 @@ mod learn;
 mod crud;
 
 use std::sync::Arc;
-use crate::config::mongo_client::{get_database, MongoConfig};
-use crate::repository::user_repository::UserRepository;
 use crate::service::user_service::UserService;
 use axum::routing::{get, post};
 use axum::Router;
@@ -18,8 +16,8 @@ use learn::json_body::body_mirror;
 use learn::path_mirror::path_mirror;
 use learn::query_mirror::query_mirror;
 
-pub async fn init_routes() {
-    let user_routes = init_user_routes().await;
+pub async fn init_routes(user_service: Arc<UserService>) {
+    let user_routes = init_user_routes(user_service).await;
     let learn_routes = init_learn_routes();
 
 
@@ -34,10 +32,7 @@ pub async fn init_routes() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn init_user_routes() -> Router {
-    let database = get_database(MongoConfig::default()).await;
-    let user_repository = UserRepository::init(database);
-    let user_service: UserService = UserService::init(Arc::new(user_repository));
+async fn init_user_routes(user_service: Arc<UserService>) -> Router {
 
     Router::new()
         .route("/", get(find_all_users).post(create_user))

@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use crate::dto::user_dto::{InsertUserDto, UserDto};
 use crate::error_handler::bad_request_exception::to_invalid_oid;
 use crate::error_handler::model::app_error::AppError;
@@ -7,7 +8,7 @@ use axum::Json;
 use mongodb::bson::oid::ObjectId;
 
 pub async fn update_user(
-    State(user_service): State<UserService>,
+    State(user_service): State<Arc<UserService>>,
     Path(id): Path<String>,
     Json(insert_user_dto): Json<InsertUserDto>,
 ) -> Result<Json<UserDto>, AppError> {
