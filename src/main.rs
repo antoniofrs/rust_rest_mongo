@@ -20,13 +20,10 @@ async fn main() {
 
     let routes = init_routes(user_service.clone());
 
-    let queue1 = env::var("QUEUE_1_URL").unwrap();
-    let queue2 = env::var("QUEUE_2_URL").unwrap();
-
     let listener = SqsListenerBuilder::from(sqs_client).await
         .polling_delay(Duration::from_secs(1))
-        .add_queue(queue1, user_service.clone())
-        .add_queue(queue2, user_service.clone())
+        .add_queue(env::var("QUEUE_1_URL").unwrap(), user_service.clone())
+        .add_queue(env::var("QUEUE_2_URL").unwrap(), user_service.clone())
         .run();
 
     let _ = tokio::join!(listener, routes);
