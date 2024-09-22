@@ -4,7 +4,7 @@ mod crud;
 use std::sync::Arc;
 use crate::service::user_service::UserService;
 use axum::routing::{get, post};
-use axum::Router;
+use axum::{middleware, Router};
 use tokio::net::TcpListener;
 use crud::create::create_user;
 use crud::delete::delete_user;
@@ -15,6 +15,7 @@ use learn::hello_world::hello_world;
 use learn::json_body::body_mirror;
 use learn::path_mirror::path_mirror;
 use learn::query_mirror::query_mirror;
+use crate::auth::authenticator::auth_middleware;
 
 pub async fn init_routes(user_service: Arc<UserService>) {
     let user_routes = init_user_routes(user_service).await;
@@ -37,6 +38,7 @@ async fn init_user_routes(user_service: Arc<UserService>) -> Router {
     Router::new()
         .route("/", get(find_all_users).post(create_user))
         .route("/:id", get(find_user_by_id).put(update_user).delete(delete_user))
+        .layer(middleware::from_fn(auth_middleware))
         .with_state(user_service)
 }
 

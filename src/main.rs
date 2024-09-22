@@ -8,9 +8,12 @@ use app::service::user_service::UserService;
 use app::support::sqs_listener::SqsListenerBuilder;
 use std::sync::Arc;
 use tokio::time::Duration;
+use app::auth::authenticator::init_authentication;
 
 #[tokio::main]
 async fn main() {
+
+    init_authentication("", "").await;
     init_logging();
 
     let sqs_client = get_local_sqs_client().await;
