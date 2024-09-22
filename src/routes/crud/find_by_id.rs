@@ -13,6 +13,7 @@ pub async fn find_user_by_id(
     State(user_service): State<Arc<UserService>>,
     Extension(valid_token): Extension<ValidToken>
 ) -> Result<Json<UserDto>, AppError> {
+    tracing::info!(valid_token);
     let user_id = ObjectId::parse_str(&id)
         .map_err(|_| { to_invalid_oid(id) })?;
 

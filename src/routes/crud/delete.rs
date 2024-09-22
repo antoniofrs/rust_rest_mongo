@@ -12,6 +12,7 @@ pub async fn delete_user(
     Path(id): Path<String>,
     Extension(valid_token): Extension<ValidToken>
 ) -> Result<Json<UserDto>, AppError> {
+    tracing::info!(valid_token);
     let user_id = ObjectId::parse_str(id).unwrap();
     let user_dto = user_service.delete(user_id).await?;
 

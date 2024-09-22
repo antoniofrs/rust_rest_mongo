@@ -11,6 +11,7 @@ pub async fn create_user(
     Json(insert_user_dto): Json<InsertUserDto>,
     Extension(valid_token): Extension<ValidToken>
 ) -> Result<Json<UserDto>, AppError> {
+    tracing::info!(valid_token);
     let user_dto = user_service.save(insert_user_dto).await?;
     Ok(Json(user_dto))
 }

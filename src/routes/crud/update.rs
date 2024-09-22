@@ -14,6 +14,7 @@ pub async fn update_user(
     Json(insert_user_dto): Json<InsertUserDto>,
     Extension(valid_token): Extension<ValidToken>
 ) -> Result<Json<UserDto>, AppError> {
+    tracing::info!(valid_token);
     let user_id = ObjectId::parse_str(&id)
         .map_err(|_| { to_invalid_oid(id) })?;
 
