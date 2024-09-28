@@ -1,10 +1,11 @@
-use crate::auth::token::{fetch_jwks, get_decoding_key, Claims, Jwks, ValidToken};
+use crate::auth::token::{fetch_jwks, get_decoding_key, Claims, Jwks};
 use axum::http::header::AUTHORIZATION;
 use axum::http::{Request, StatusCode};
 use axum::middleware::Next;
 use axum::response::IntoResponse;
 use jsonwebtoken::{decode, decode_header, Algorithm, Validation};
 use tokio::sync::OnceCell;
+use crate::auth::valid_token::ValidToken;
 
 #[derive(Debug)]
 pub struct Authenticator {
@@ -40,7 +41,7 @@ pub async fn auth_middleware<B>(mut req: Request<B>, next: Next) -> impl IntoRes
         }
     }
 
-    (StatusCode::UNAUTHORIZED, "Invalid bearer token").into_response()
+    (StatusCode::UNAUTHORIZED, "Invalid token").into_response()
 }
 
 async fn process_token(jwt: &str) -> ValidToken {
@@ -60,5 +61,5 @@ async fn process_token(jwt: &str) -> ValidToken {
     let token_data = decode::<Claims>(jwt, &decoding_key, &validation)
         .expect("Failed to verify token");
 
-    ValidToken { permissions: vec![String::from(token_data.claims.iss)] }
+    ValidToken { permissions: token_data.claims.permissions }
 }

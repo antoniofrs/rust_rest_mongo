@@ -1,3 +1,4 @@
+use std::error::Error;
 use crate::error_handler::model::app_error::AppError;
 use jsonwebtoken::DecodingKey;
 use serde::{Deserialize, Serialize};
@@ -18,11 +19,12 @@ pub struct Jwks {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
-    pub iss: String,
     sub: String,
     aud: String,
     exp: usize,
     iat: usize,
+    pub iss: String,
+    pub permissions: Vec<String>
 }
 
 pub async fn fetch_jwks(uri: String) -> Result<Jwks, AppError> {
@@ -41,7 +43,3 @@ pub fn get_decoding_key(jwks: &Jwks, kid: &str) -> Option<DecodingKey> {
     None
 }
 
-#[derive(Debug, Clone)]
-pub struct ValidToken {
-    pub permissions: Vec<String>,
-}
