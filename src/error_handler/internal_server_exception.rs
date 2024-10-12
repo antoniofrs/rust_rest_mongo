@@ -9,3 +9,11 @@ pub fn database_error(action: &str, database_error: Error) -> AppError {
         format!("Error while '{}'", action)
     )
 }
+
+
+
+pub fn queue_error() -> AppError {
+    build_internal_server_error(
+        "Error while sending message on queue".to_string()
+    )
+}

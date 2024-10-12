@@ -3,12 +3,14 @@ use crate::error_handler::bad_request_exception::to_validation_error;
 use crate::error_handler::model::app_error::AppError;
 use crate::error_handler::not_found_exception::user_not_found_error;
 use crate::repository::user_repository::UserRepositoryTrait;
+use crate::support::sqs_listener::SqsListener;
 use async_trait::async_trait;
 use axum::extract::FromRef;
 use mongodb::bson::oid::ObjectId;
 use std::sync::Arc;
+use std::time::Duration;
+use tokio::time::sleep;
 use validator::Validate;
-use crate::support::sqs_listener::SqsListener;
 
 #[derive(Clone, FromRef)]
 pub struct UserService {
@@ -77,7 +79,10 @@ impl UserServiceTrait for UserService {
 }
 #[async_trait]
 impl SqsListener for UserService {
-    async fn on_message_received(&self, message: String) -> () {
-        println!("{}", message);
+    async fn on_message_received(&self, message: String) -> Result<(), ()> {
+        tracing::info!("Processing message {}" , message);
+        sleep(Duration::from_secs(5)).await;
+        tracing::info!("Processed message {}" , message);
+        Ok(())
     }
 }

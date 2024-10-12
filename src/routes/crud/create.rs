@@ -1,9 +1,11 @@
 use std::sync::Arc;
+
 use crate::dto::user_dto::{InsertUserDto, UserDto};
 use crate::error_handler::model::app_error::AppError;
 use crate::service::user_service::{UserService, UserServiceTrait};
 use axum::extract::State;
 use axum::Json;
+
 
 pub async fn create_user(
     State(user_service): State<Arc<UserService>>,
